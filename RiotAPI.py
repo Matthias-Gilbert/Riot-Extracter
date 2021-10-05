@@ -2,6 +2,7 @@ import requests
 import RiotConsts as Consts
 import json
 
+
 class RiotAPI(object):
 
     def __init__(self, api_key):
@@ -19,7 +20,18 @@ class RiotAPI(object):
                     ),
                 params = args
                 )
-        return response.json()
+
+
+        if response.status_code == 200:
+            return response.json()
+
+        elif response.status_code == 500:
+            print('The server seems to be having issues please try again later')
+            exit()
+
+        else:
+            print('Please confirm your Api is up to date and was entered correctly')
+
 
     def get_entries_by_summonerid(self, encryptedSummonerId):
         api_url = Consts.URL['entries_by_summoner'].format(
