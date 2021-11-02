@@ -21,16 +21,28 @@ class RiotAPI(object):
                 params = args
                 )
 
-
         if response.status_code == 200:
             return response.json()
 
         elif response.status_code == 500:
             print('The server seems to be having issues please try again later')
+            response.raise_for_status()
             exit()
+
+        elif response.status_code == 404:
+            print('Please enter a valid Summoner name')
+            response = 'bad username'
+            return response
+        
+        elif response.status_code == 403:
+            print('Please enter a current api')
+            response = 'bad api'
+            return response
 
         else:
             print('Please confirm your Api is up to date and was entered correctly')
+            response.raise_for_status()
+            exit()
 
 
     def get_entries_by_summonerid(self, encryptedSummonerId):
@@ -47,3 +59,11 @@ class RiotAPI(object):
                 )
         return self._request(api_url)
 
+
+    def get_masteries_by_summonerid(self, encryptedSummonerId, championId):
+        api_url = Consts.URL['masteries_by_summoner'].format(
+                version = Consts.API_VERSIONS['V4'],
+                summonerid = encryptedSummonerId,
+                Id = championId
+                )
+        return self._request(api_url)
