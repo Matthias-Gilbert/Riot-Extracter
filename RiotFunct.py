@@ -16,6 +16,10 @@ def info_type_selection():
         print('Please enter one of the options')
         return info_type_selection()
 
+def cloud_get_api(info):
+    api = RiotAPI(info)
+    return api
+
 def get_league_api():
     
     info = input("Please enter your Api, Type 'exit' if you want to quit: ")
@@ -32,9 +36,13 @@ def get_league_api():
         return get_league_api()
 
 
-def get_league_stats(api, Id, level, user_name):
+def get_league_stats(api, user_name):
     while True:
         try:
+            info = api.get_summoner_by_name(user_name)
+            Id = info['id']
+            Level = info['summonerLevel']
+
             stats = api.get_entries_by_summonerid(Id)
             flex = stats[0]
             solo = stats[1]
@@ -56,7 +64,7 @@ def get_league_stats(api, Id, level, user_name):
             elif flex_hotStreak == False:
                 flex_winStreak = 'Your not on a winning streak'
     
-            flex_list = [f"Username:{flex_name}",f"Level:,{level}",f"Tier:{flex_tier}",f"Rank:{flex_rank}",f"Rank points:{flex_Points}",f"Wins:{flex_wins}",f"Losses:{flex_losses}",f"Winningstreak:{flex_hotStreak}",f"WinRate:{flex_winRate}%"]
+            flex_list = [f"Username:{flex_name}",f"Level:{Level}",f"Tier:{flex_tier}",f"Rank:{flex_rank}",f"Rank points:{flex_Points}",f"Wins:{flex_wins}",f"Losses:{flex_losses}",f"Winningstreak:{flex_hotStreak}",f"WinRate:{flex_winRate}%"]
 
             with open('FlexRanked.csv', 'w', encoding='UTF8', newline='') as flex_file:
                 writer = csv.writer(flex_file)
@@ -65,7 +73,7 @@ def get_league_stats(api, Id, level, user_name):
             flex_data = {
                     'Flex_stats': {
                         'Summoner' : flex_name,
-                        'Level' : level,
+                        'Level' : Level,
                         'Tier' : flex_tier,
                         'Rank' : flex_rank,
                         'LeaguePoints' : flex_Points,
@@ -101,7 +109,7 @@ def get_league_stats(api, Id, level, user_name):
             elif solo_hotStreak == False:
                 solo_winStreak = "You're not on a winning streak"
     
-            solo_list = [f"Username:{solo_name}",f"Level:,{level}",f"Tier:{solo_tier}",f"Rank:{solo_rank}",f"Rank points:{solo_Points}",f"Wins:{solo_wins}",f"Losses:{solo_losses}",f"Winningstreak:{solo_hotStreak}",f"WinRate:{solo_winRate}%"]
+            solo_list = [f"Username:{solo_name}",f"Level:{Level}",f"Tier:{solo_tier}",f"Rank:{solo_rank}",f"Rank points:{solo_Points}",f"Wins:{solo_wins}",f"Losses:{solo_losses}",f"Winningstreak:{solo_hotStreak}",f"WinRate:{solo_winRate}%"]
 
             with open('RankedSoloDuo.csv', 'w', encoding='UTF8' ,newline='') as solo_file: 
                 writer = csv.writer(solo_file)
@@ -110,7 +118,7 @@ def get_league_stats(api, Id, level, user_name):
             solo_data = {
                     'Solo_stats': {
                         'Summoner' : solo_name,
-                        'Level' : level,
+                        'Level' : Level,
                         'Tier' : solo_tier,
                         'Rank' : solo_rank,
                         'LeaguePoints' : solo_Points,
@@ -127,34 +135,34 @@ def get_league_stats(api, Id, level, user_name):
             with open('RankedSoloDuo.json', 'w') as s:
                 s.write(solo_json)
 
-            solo_stats = f"Username: {solo_name} \nLevel: {level} \nRank: {solo_tier} {solo_rank} {solo_Points} \nWins/Losses: W:{solo_wins} L:{solo_losses} \nWinrate: {solo_winRate}% \n{solo_winStreak}"
+            solo_stats = f"Username: {solo_name} \nLevel: {Level} \nRank: {solo_tier} {solo_rank} {solo_Points} \nWins/Losses: W:{solo_wins} L:{solo_losses} \nWinrate: {solo_winRate}% \n{solo_winStreak}"
 
-            flex_stats = f"Username: {flex_name} \nLevel: {level} \nRank: {flex_tier} {flex_rank} {flex_Points} \nWins/Losses: W:{flex_wins} L:{flex_losses} \nWinrate: {flex_winRate}% \n{flex_winStreak}"
+            flex_stats = f"Username: {flex_name} \nLevel: {Level} \nRank: {flex_tier} {flex_rank} {flex_Points} \nWins/Losses: W:{flex_wins} L:{flex_losses} \nWinrate: {flex_winRate}% \n{flex_winStreak}"
 
-            Game_mode = input("What game type do you want your stats for Flex, Solo or Both: Type 'back' if you want a different opttion: ")
+            #Game_mode = input("What game type do you want your stats for Flex, Solo or Both: Type 'back' if you want a different opttion: ")
 
-            if Game_mode.casefold() == 'back':
-                break
-            elif Game_mode.casefold() == 'flex':
-                print('Your Ranked Flex stats are: ')
-                print(flex_stats)
+            #if Game_mode.casefold() == 'back':
+                #break
+            #elif Game_mode.casefold() == 'flex':
+                #print('Your Ranked Flex stats are: ')
+                #print(flex_stats)
 
-            elif Game_mode.casefold() == 'solo':
-                print('Your Solo/Duo stats are: ')
-                print(solo_stats)
+            #elif Game_mode.casefold() == 'solo':
+                #print('Your Solo/Duo stats are: ')
+                #print(solo_stats)
 
-            elif Game_mode == 'both' or Game_mode == 'Both':
-                print('Your stats for Flex are: ')
-                print(flex_stats)
-                print()        
-                print('Your stats for Solo/Duo are')
-                print(solo_stats)
-
-            else:
-                print('Please Enter a valid game mode')
-                return get_league_stats(api, Id)
+            #elif Game_mode == 'both' or Game_mode == 'Both':
+            print('Your stats for Flex are: ')
+            print(flex_stats)
+            print()        
+            print('Your stats for Solo/Duo are')
+            print(solo_stats)
+            break
+            #else:
+                #print('Please Enter a valid game mode')
+                #return get_league_stats(api, Id)
         except ValueError:
-            print('Please enter a valid resopnse')
+            #print('Please enter a valid resopnse')
             return get_league_stats(api, Id)
 
 
@@ -183,36 +191,40 @@ def get_champion_masteries(api, Id):
 
     while True:
 
-        champ = input("Please enter a champion name, Type 'back' if you want to select another option: ")
+        champ = input("Please enter a champion name or all for every champion with a mastery level, Type 'back' if you want to select another option: ")
         champ = champ.capitalize()
     
         if champ.casefold() == 'back':
             break
 
+        #elif champ.casefold() == 'all':
+            #get_all_champion_masteries(api, Id)
+
         elif not champ in champs['data']:
             print('Please enter a valid champion')
-            return get_champion_masteries(api, user_name, Id)
+            return get_champion_masteries(api, Id)
 
-        champId = champs["data"][champ]["key"]
+        else:
+            champId = champs["data"][champ]["key"]
     
-        masteries = api.get_masteries_by_summonerid(Id, champId)
+            masteries = api.get_masteries_by_summonerid(Id, champId)
     
-        champion_level = masteries["championLevel"]
-        champion_points = masteries["championPoints"]
-        champion_sincelevel = masteries['championPointsSinceLastLevel']
-        champion_tilllevel = masteries['championPointsUntilNextLevel']
-        champion_chestGranted = masteries["chestGranted"]
-        champion_tokens = masteries['tokensEarned']
+            champion_level = masteries["championLevel"]
+            champion_points = masteries["championPoints"]
+            champion_sincelevel = masteries['championPointsSinceLastLevel']
+            champion_tilllevel = masteries['championPointsUntilNextLevel']
+            champion_chestGranted = masteries["chestGranted"]
+            champion_tokens = masteries['tokensEarned']
 
-        champion_mastery = f"{champ} stats: \nMastery: level {champion_level}, points {champion_points} \nProgress: Points till next level {champion_tilllevel} \nTokens Earned: {champion_tokens} \nEarned Chest: {champion_chestGranted}"
+            champion_mastery = f"{champ} stats: \nMastery: level {champion_level}, points {champion_points} \nProgress: Points till next level {champion_tilllevel} \nTokens Earned: {champion_tokens} \nEarned Chest: {champion_chestGranted}"
 
-        print(champion_mastery)
+            print(champion_mastery)
         
         while True:
             try:
-                again = input('Would you like to look at a another champion? yes/no: ')
+                again = input('Would you like to look at a another champion? Yes/No: ')
                 if again.casefold() == 'yes':
-                    return get_champion_masteries(api, user_name, Id)
+                    return get_champion_masteries(api, Id)
                 elif again.casefold() == 'no':
                     break
                 else:
@@ -224,6 +236,20 @@ def get_champion_masteries(api, Id):
         break
 
 
-#def get_all_champion_masteries(api, user_name, Id):
+#def get_all_champion_masteries(api, Id):
+    
+    #with open('champions.json') as champdata:
+        #champs = json.load(champdata)
 
+    #masteries = api.get_all_masteries_by_summonerid(Id)
+
+    #while True:
+        
+        #for champ in masteries:
+            #for champions in champs['data']:
+                #if champ['championId'] == champs['data'][champions]['key']:
+                    #champion_name = champion['name']
+                    #masterie_level = masteries['championLevel']
+                    #masterie_points = masteries['championPoints']
+                    #print(f'{name}: \nMasterie Level: {masterie_level} \nMasterie Points: {masterie_points}')
 

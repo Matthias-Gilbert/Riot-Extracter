@@ -67,3 +67,10 @@ class RiotAPI(object):
                 Id = championId
                 )
         return self._request(api_url)
+
+    def get_all_masteries_by_summonerid(self, encryptedSummonerId):
+        api_url = Consts.URL['all_masteries_by_summoner'].format(
+                version = Consts.API_VERSIONS['V4'],
+                summonerid = encryptedSummonerId
+                )
+        return self._request(api_url)

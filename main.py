@@ -87,7 +87,7 @@ while True:
     Infotype = Rf.info_type_selection()
     
     if Infotype.casefold() == 'stats':
-        Rf.get_league_stats(api, Id, user_name, level)
+        Rf.get_league_stats(api, user_name)
 
     elif Infotype.casefold() == 'masteries':
         Rf.get_champion_masteries(api, Id)
