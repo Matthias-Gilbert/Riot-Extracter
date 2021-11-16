@@ -1,1 +1,0 @@
-gcloud functions deploy Riot-Extractor --project michael-gilbert-dev --region=us-west4 --entry-point=riotcloudfunct --runtime=python38 --service-account=riot-extractor@michael-gilbert-dev.iam.gserviceaccount.com --timeout=480 --trigger-topic Riot-Extractor
