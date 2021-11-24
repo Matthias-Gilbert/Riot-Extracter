@@ -2,6 +2,7 @@ from RiotAPI import RiotAPI
 import csv
 import json
 import os
+import GoogleStorage as gs
 
 
 def info_type_selection():
@@ -39,9 +40,11 @@ def get_league_api():
 def get_league_stats(api, user_name):
     while True:
         try:
+            project = "michael-gilbert-dev"
             info = api.get_summoner_by_name(user_name)
             Id = info['id']
             Level = info['summonerLevel']
+            username = info["name"]
 
             stats = api.get_entries_by_summonerid(Id)
             flex = stats[0]
@@ -66,9 +69,9 @@ def get_league_stats(api, user_name):
     
             flex_list = [f"Username:{flex_name}",f"Level:{Level}",f"Tier:{flex_tier}",f"Rank:{flex_rank}",f"Rank points:{flex_Points}",f"Wins:{flex_wins}",f"Losses:{flex_losses}",f"Winningstreak:{flex_hotStreak}",f"WinRate:{flex_winRate}%"]
 
-            with open('FlexRanked.csv', 'w', encoding='UTF8', newline='') as flex_file:
-                writer = csv.writer(flex_file)
-                writer.writerow(flex_list)
+            #with open('FlexRanked.csv', 'w', encoding='UTF8', newline='') as flex_file:
+                #writer = csv.writer(flex_file)
+                #writer.writerow(flex_list)
     
             flex_data = {
                     'Flex_stats': {
@@ -86,9 +89,9 @@ def get_league_stats(api, user_name):
 
     
 
-            flex_json = json.dumps(flex_data)
-            with open('FlexRanked.json', 'w') as f:
-                f.write(flex_json)
+            #flex_json = json.dumps(flex_data)
+            #with open('FlexRanked.json', 'w') as f:
+                #f.write(flex_json)
 
 
             solo_name = solo['summonerName']
@@ -111,9 +114,9 @@ def get_league_stats(api, user_name):
     
             solo_list = [f"Username:{solo_name}",f"Level:{Level}",f"Tier:{solo_tier}",f"Rank:{solo_rank}",f"Rank points:{solo_Points}",f"Wins:{solo_wins}",f"Losses:{solo_losses}",f"Winningstreak:{solo_hotStreak}",f"WinRate:{solo_winRate}%"]
 
-            with open('RankedSoloDuo.csv', 'w', encoding='UTF8' ,newline='') as solo_file: 
-                writer = csv.writer(solo_file)
-                writer.writerow(solo_list)
+            #with open('RankedSoloDuo.csv', 'w', encoding='UTF8' ,newline='') as solo_file: 
+                #writer = csv.writer(solo_file)
+                #writer.writerow(solo_list)
     
             solo_data = {
                     'Solo_stats': {
@@ -131,13 +134,26 @@ def get_league_stats(api, user_name):
 
 
 
-            solo_json = json.dumps(solo_data)
-            with open('RankedSoloDuo.json', 'w') as s:
-                s.write(solo_json)
+            #solo_json = json.dumps(solo_data)
+            #with open('RankedSoloDuo.json', 'w') as s:
+                #s.write(solo_json)
 
             solo_stats = f"Username: {solo_name} \nLevel: {Level} \nRank: {solo_tier} {solo_rank} {solo_Points} \nWins/Losses: W:{solo_wins} L:{solo_losses} \nWinrate: {solo_winRate}% \n{solo_winStreak}"
 
             flex_stats = f"Username: {flex_name} \nLevel: {Level} \nRank: {flex_tier} {flex_rank} {flex_Points} \nWins/Losses: W:{flex_wins} L:{flex_losses} \nWinrate: {flex_winRate}% \n{flex_winStreak}"
+
+            bucket_name = username.lower()            
+            
+            locate_bucket = gs.find_bucket(bucket_name)
+            if locate_bucket is None:
+                gs.create_bucket(bucket_name, project)
+
+            flex_string = flex_stats
+            solo_string = solo_stats
+
+            gs.uploading_string(bucket_name, solo_string, "solo_stats")
+            gs.uploading_string(bucket_name, flex_string, "flex_stats")
+
 
             #Game_mode = input("What game type do you want your stats for Flex, Solo or Both: Type 'back' if you want a different opttion: ")
 
